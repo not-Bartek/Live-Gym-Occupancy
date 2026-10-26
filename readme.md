@@ -1,7 +1,7 @@
 # Gym Occupancy
 
-## Wizja
-Aplikacja ma w czasie rzeczywistym wyświetlać liczbę ludzi obecnych na siłowni. Pomogłoby to chętnym wybierać godziny, w których ludzi jest mniej, a także dałoby siłowniom dane o liczbie ćwiczących.
+## Vision
+The application is designed to display the number of people currently at the gym in real time. This would help users choose times when the gym is less crowded, while also providing gym operators with data on the number of people exercising.
 
-## Licencja
-Projekt jest udostępniany na licencji MIT. Materiały pochodzące z zewnętrznych źródeł podlegają licencjom i prawom ich odpowiednich autorów.
+## License
+This project is released under the MIT License. Materials sourced from external origins are subject to the licenses and rights of their respective authors.
