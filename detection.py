@@ -1,6 +1,9 @@
 import cv2
 import time
 from ultralytics import YOLO
+import os
+import csv
+from datetime import datetime
 
 pending_points = []
 active_zone = None
@@ -37,9 +40,15 @@ def on_mouse_click(event, x, y, flags, param):
 on_mouse_click.count = 0
 
 # config
-model = YOLO("yolo11n.pt")
+
+CSV_FILENAME = "occupancy_log.csv"
+LOG_INTERVAL = 1.0
+last_log_time = 0.0
+
+model = YOLO("yolov8n.mlpackage")
+# model = YOLO("yolo11n.pt")
 N_FRAME = 1
-n = 5
+n = 2
 m = 2
 """
 n:
@@ -65,6 +74,14 @@ annotated_frame = None
 
 # Współrzędne strefy
 
+file_exists = os.path.isfile(CSV_FILENAME)
+csv_file = open(CSV_FILENAME, mode="a", newline="", encoding="utf-8")
+csv_writer = csv.writer(csv_file)
+
+if not file_exists:
+    csv_writer.writerow(["timestamp", "people_in_frame", "people_in_zone", "fps"])
+    csv_file.flush()
+
 points = [None, None]
 
 
@@ -77,7 +94,11 @@ success, frame = cap.read()
 #Zaznaczenie punktów
 if not success:
     print("Koniec nagrania lub błąd odczytu.")
-    exit
+    cap.release()
+    cv2.destroyAllWindows()
+    csv_file.close()
+    exit()
+
 
 on_mouse_click.counter = 0
 cv2.setMouseCallback(WINDOW_NAME, on_mouse_click)
@@ -117,6 +138,7 @@ while cap.isOpened():
 
     frame_idx += 1
     if frame_idx % N_FRAME != 0:
+        time.sleep(100)
         continue
     if frame_idx % N_FRAME == 0:
         curr_time = time.time()
@@ -157,6 +179,12 @@ while cap.isOpened():
         # 3. NAPISY NA EKRANIE
         people_count = len(results[0].boxes)
 
+        if curr_time - last_log_time >= LOG_INTERVAL:
+            timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            csv_writer.writerow([timestamp_str, people_count, people_in_zone, f"{fps:.1f}"])
+            csv_file.flush()  # zrzucamy bufor na dysk
+            last_log_time = curr_time
+
         draw_text_with_outline(annotated_frame, f"Osoby w kadrze: {people_count}",
                                 (10, 30), 0.8, (170, 100, 240), (0, 0, 0), 2)
         
@@ -175,3 +203,5 @@ while cap.isOpened():
 
 cap.release()
 cv2.destroyAllWindows()
+csv_file.close()
+print(f"Dane pomyślnie zapisane w {CSV_FILENAME}")

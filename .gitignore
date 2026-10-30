@@ -5,3 +5,8 @@ tests/*
 __pycache
 .venv/*
 yolov8n.mlpackage
+yolov8m.mlpackage
+plots/*
+plots
+models
+models/

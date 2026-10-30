@@ -41,8 +41,11 @@ cv2.resizeWindow("CCTV Live Detection", 1280, 720)
 while cap.isOpened():
     success, frame = cap.read()
     if not success:
-        print("Koniec nagrania lub błąd odczytu.")
-        break
+        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        success, frame = cap.read()
+        if not success:
+            print("Błąd odczytu")
+            break
 
     frame_idx += 1
 
