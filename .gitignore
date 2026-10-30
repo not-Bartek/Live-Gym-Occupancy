@@ -4,3 +4,4 @@ tests/*
 .venv
 __pycache
 .venv/*
+yolov8n.mlpackage
